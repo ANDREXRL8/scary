@@ -104,7 +104,7 @@ class Abobora(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(os.path.join('sprites', 'abobora01.png'))
         self.image = pygame.transform.scale(self.image, [40, 40])
-        self.rect = self.image.get_rect()
+        self.rect = pygame.Rect(100, 50, 50, 50)
         self.rect[0] = xpos
         self.mask = pygame.mask.from_surface(self.image)
         self.rect[1] = TELA_ALTURA - ysize
@@ -126,7 +126,7 @@ class Coins(pygame.sprite.Sprite):
         self.rect[0] -= GAME_SPEED
 
 def get_random_aboboras(xpos):
-    size = random.randint(2, 2)
+    size = random.randint(150, 150)
     abobora = Abobora(xpos, size)
     return abobora
 
@@ -137,12 +137,12 @@ def get_random_coins(xpos):
 
 coinsGroup = pygame.sprite.Group()
 for i in range(2):
-    coin = get_random_coins(TELA_LARGURA* i + 100)
+    coin = get_random_coins(TELA_LARGURA* i + 10)
     coinsGroup.add(coin)
 
 aboboraGroup = pygame.sprite.Group()
 for i in range(2):
-    abob = get_random_aboboras(TELA_LARGURA * i + 100)
+    abob = get_random_aboboras(TELA_LARGURA * i + 10)
     aboboraGroup.add(abob)
 
 
@@ -185,13 +185,13 @@ while True:
     if is_off_screen(groud_group.sprites()[0]):
         groud_group.remove(groud_group.sprites()[0])
 
-        new_ground = Chao(GROUND_WIDTH)
+        new_ground = Chao(GROUND_WIDTH + 20)
         groud_group.add(new_ground)
 
 
     if is_off_screen(aboboraGroup.sprites()[0]):
         aboboraGroup.remove(aboboraGroup.sprites()[0])
-        newAbobora = get_random_aboboras(TELA_LARGURA * 2)
+        newAbobora = get_random_aboboras(TELA_LARGURA * 1)
         aboboraGroup.add(newAbobora)
 
         for i in range(100):
