@@ -13,8 +13,8 @@ TELA_ALTURA = 480
 SPEED = 10
 GAME_SPEED = 5
 
-GROUND_WIDTH = 2 * TELA_LARGURA
-GROUND_HEIGHT = 10
+CHAO_LARGURA = 2 * TELA_LARGURA
+CHAO_ALTURA = 10
 
 PRETO = (0, 0, 0) #cor da background da janela
 
@@ -40,7 +40,6 @@ class Fantasma(pygame.sprite.Sprite):
         self.speed = SPEED
         self.mask = pygame.mask.from_surface(self.image)
 
-   
     
     def update(self):
 
@@ -80,23 +79,23 @@ class Chao(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
         self.image = pygame.image.load(os.path.join('sprites', 'ground.png'))
-        self.image = pygame.transform.scale(self.image, (GROUND_WIDTH, GROUND_HEIGHT))
+        self.image = pygame.transform.scale(self.image, (CHAO_LARGURA, CHAO_ALTURA))
 
         self.rect = self.image.get_rect()
         self.rect[0] = xpos
-        self.rect[1] = TELA_ALTURA - GROUND_HEIGHT #posição Y
+        self.rect[1] = TELA_ALTURA - CHAO_ALTURA #posição Y
 
     def update(self):
         self.rect[0] -= GAME_SPEED 
 
-def is_off_screen(sprite):
+def fora_tela(sprite):
     # verifica quando o objeto sai da tela
     return sprite.rect[0] < -(sprite.rect[2])
 
-groud_group = pygame.sprite.Group()
+chaoGroup = pygame.sprite.Group()
 for i in range(2):
-    chao = Chao(GROUND_WIDTH * i)
-    groud_group.add(chao)
+    chao = Chao(CHAO_LARGURA * i)
+    chaoGroup.add(chao)
 
 
 class Abobora(pygame.sprite.Sprite):
@@ -126,12 +125,12 @@ class Coins(pygame.sprite.Sprite):
         self.rect[0] -= GAME_SPEED
 
 def get_random_aboboras(xpos):
-    size = random.randint(150, 150)
+    size = random.randint(64, 480)   #150x150
     abobora = Abobora(xpos, size)
     return abobora
 
 def get_random_coins(xpos):
-    size = random.randint(80, 200)
+    size = random.randint(32, 380)
     coin = Coins(xpos, size)
     return coin
 
@@ -149,18 +148,16 @@ for i in range(2):
 #função para desenhar instancias do grupo
 def draw():
     frames_fantasmas.draw(tela)
-    groud_group.draw(tela)
+    chaoGroup.draw(tela)
     aboboraGroup.draw(tela)
     coinsGroup.draw(tela)
 
 #função para atualizar instancias do grupo
 def update():
     frames_fantasmas.update()
-    groud_group.update()
+    chaoGroup.update()
     aboboraGroup.update()
     coinsGroup.update()
-
-
 
 
 relogio = pygame.time.Clock() # FPS do jogo
@@ -169,7 +166,7 @@ pygame.font.init()
 placar = 0
 while True:
     relogio.tick(30)
-    tela.fill(PRETO) #pintado de branco a tela
+    tela.fill(PRETO) #pintado de preto a tela
 
     fonte = pygame.font.SysFont('Arial', 35)
     contador = fonte.render(f'{placar}', True, [255,255,255]) 
@@ -182,14 +179,14 @@ while True:
             exit()
 
 
-    if is_off_screen(groud_group.sprites()[0]):
-        groud_group.remove(groud_group.sprites()[0])
+    if fora_tela(chaoGroup.sprites()[0]):
+        chaoGroup.remove(chaoGroup.sprites()[0])
 
-        new_ground = Chao(GROUND_WIDTH + 20)
-        groud_group.add(new_ground)
+        new_chao = Chao(CHAO_LARGURA - 20)
+        chaoGroup.add(new_chao)
 
 
-    if is_off_screen(aboboraGroup.sprites()[0]):
+    if fora_tela(aboboraGroup.sprites()[0]):
         aboboraGroup.remove(aboboraGroup.sprites()[0])
         newAbobora = get_random_aboboras(TELA_LARGURA * 1)
         aboboraGroup.add(newAbobora)
@@ -210,6 +207,9 @@ while True:
         print("GAME OVERR")
         break
         
+    if placar == 50:
+        print('Voce ganhou')
+        break
 
     desenhar = draw()
     desenhar
